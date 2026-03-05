@@ -6,6 +6,8 @@ device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 tokenizer = AutoTokenizer.from_pretrained("ProsusAI/finbert")
 model = AutoModelForSequenceClassification.from_pretrained("ProsusAI/finbert").to(device)
+labels = ["positive", "negative", "neutral"]
+
 
 def estimate_sentiment(news):
     if news:
@@ -20,3 +22,8 @@ def estimate_sentiment(news):
         return probability, sentiment
     else:
         return 0, labels[-1]
+
+if __name__ == "__main__":
+    tensor, sentmiment = estimate_sentiment(['markets responded negatively to the news!','traders were displeased!'])
+    print(tensor, sentmiment)
+    print(torch.cuda.is_available())
