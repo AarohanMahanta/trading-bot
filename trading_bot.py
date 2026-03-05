@@ -3,12 +3,12 @@ from lumibot.backtesting import YahooDataBacktesting
 from lumibot.strategies.strategy import Strategy
 from lumibot.traders import Trader
 from datetime import datetime
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import os
 import torch
 from dotenv import load_dotenv
 from alpaca_trade_api import REST
 from timedelta import Timedelta
+from finbert_utils import estimate_sentiment
 
 load_dotenv()
 
@@ -28,7 +28,7 @@ class MLTrader(Strategy):
         self.sleeptime = "24H"
         self.last_trade = None
         self.cash_at_risk = cash_at_risk
-        self.api = REST(base_url=API_KEY, secret_key=API_SECRET, key_id=BASE_URL)
+        self.api = REST(base_url=BASE_URL, secret_key=API_SECRET, key_id=API_KEY)
 
     def position_sizing(self):
         cash = self.get_cash()
@@ -41,18 +41,19 @@ class MLTrader(Strategy):
         three_days_prior = today - Timedelta(days=3)
         return today.strftime('%Y-%m-%d'), three_days_prior.strftime('%Y-%m-%d')
 
-    def get_news(self):
+    def get_sentiment(self):
         today, three_days_prior = self.get_dates()
         news = self.api.get_news(symbol=self.symbol, start=three_days_prior, end=today)
         news = [ev.__dict__["_raw"]["headline"] for ev in news]
+        probability, sentiment = estimate_sentiment(news)
         return news
 
     def on_trading_iteration(self):
         cash, last_price, quantity = self.position_sizing ()
         if cash > last_price:
             if self.last_trade == None:
-                news = self.get_news()
-                print(news)
+                probability, sentiment = self.get_sentiment()
+                print(probability, sentiment)
                 order = self.create_order(
                     self.symbol,
                     quantity,
