@@ -32,10 +32,11 @@ class MLTrader(Strategy):
         return cash, last_price, quantity
 
     def on_trading_iteration(self):
+        cash, last_price, quantity = self.position_sizing()
         if self.last_trade == None:
             order = self.create_order(
                 self.symbol,
-                10,
+                quantity,
                 "buy",
                 type="market"
             )
