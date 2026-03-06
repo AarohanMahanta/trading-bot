@@ -59,78 +59,18 @@ A BERT model trained specifically on financial text such as:
 - earnings reports
 - market news
 - analyst commentary
+  
 The model classifies headlines into:
 - Positive
 - Negative
 - Neutral
+  
 Example:
 "Markets rally after strong earnings"
 
+
 Sentiment: Positive
+
 Probability: 0.997
-Momentum Indicator
 
-The strategy also calculates short term price momentum:
-Momentum = Price(today) - Price(N days ago)
-This prevents the bot from buying when sentiment is positive but the price trend is falling.
-Risk Management
-Each trade uses bracket orders.
-A bracket order automatically creates:
-Take Profit
-Stop Loss
-Example:
-Buy SPY at $100
-
-Take Profit → $120
-Stop Loss → $95
-This protects against large losses and locks in gains automatically.
-Parameter Optimization
-The system also includes a parameter optimization engine.
-It tests multiple combinations of:
-Take Profit %
-Stop Loss %
-Momentum Window
-Example search grid:
-Take Profit: 1.05, 1.10
-Stop Loss: 0.95, 0.97
-Momentum Days: 3, 5
-Each configuration is backtested to determine the best performing strategy.
-Example Output
-Testing: 1.05 0.95 3
-Testing: 1.05 0.95 5
-Testing: 1.10 0.97 3
-...
-
-BEST PARAMETERS FOUND
-Take Profit: 1.10
-Stop Loss: 0.95
-Momentum Days: 5
-Return: 0.18
-Installation
-Clone the repository:
-git clone https://github.com/yourusername/ml-sentiment-trading-bot
-cd ml-sentiment-trading-bot
-Install dependencies:
-pip install -r requirements.txt
-Environment Variables
-Create a .env file:
-ALPACA_API_KEY=your_key
-ALPACA_API_SECRET=your_secret
-ALPACA_BASE_URL=https://paper-api.alpaca.markets
-Running the Bot
-Run backtesting:
-python trading_bot.py
-The system will simulate trades using historical market data.
-Disclaimer
-This project is for educational purposes only.
-It does not constitute financial advice and should not be used to make real investment decisions.
-Trading involves risk and past performance does not guarantee future results.
-Possible Future Improvements
-Portfolio trading (multiple assets)
-Reinforcement learning strategies
-Real-time market streaming
-News filtering with LLMs
-Risk-adjusted position sizing
-Performance dashboards
-License
-MIT License
+MIT Licence
