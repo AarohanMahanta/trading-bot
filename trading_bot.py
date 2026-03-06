@@ -65,6 +65,7 @@ class MLTrader(Strategy):
             if sentiment == "positive" and probability > .999 and position is None and momentum > 0: 
                 if self.last_trade == "sell": 
                     self.sell_all() 
+
                 order = self.create_order(
                     self.symbol, 
                     quantity, 
@@ -75,9 +76,11 @@ class MLTrader(Strategy):
                 )
                 self.submit_order(order) 
                 self.last_trade = "buy"
+
             elif sentiment == "negative" and probability > .999: 
                 if self.last_trade == "buy": 
-                    self.sell_all() 
+                    self.sell_all()
+                    
                 order = self.create_order(
                     self.symbol, 
                     quantity, 
