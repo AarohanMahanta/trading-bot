@@ -23,11 +23,16 @@ ALPACA_CREDS = {
 }
 
 class MLTrader(Strategy):
-    def initialize(self, symbol:str="SPY", cash_at_risk:float=0.5) :
+    def initialize(self, symbol:str="SPY", cash_at_risk:float=0.5, take_profit=1.20, stop_loss = 0.95, momentum_days = 5):
         self.symbol = symbol
         self.sleeptime = "24H"
         self.last_trade = None
         self.cash_at_risk = cash_at_risk
+
+        self.take_profit = take_profit
+        self.stop_loss = stop_loss
+        self.momentum_days = momentum_days
+        
         self.api = REST(base_url=BASE_URL, secret_key=API_SECRET, key_id=API_KEY)
 
     def position_sizing(self):
@@ -62,7 +67,7 @@ class MLTrader(Strategy):
         momentum = self.get_momentum()
 
         if cash > last_price: 
-            if sentiment == "positive" and probability > .999 and position is None and momentum > 0: 
+            if sentiment == "positive" and probability > 0.8 and position is None and momentum > 0: 
                 if self.last_trade == "sell": 
                     self.sell_all() 
 
@@ -77,7 +82,7 @@ class MLTrader(Strategy):
                 self.submit_order(order) 
                 self.last_trade = "buy"
 
-            elif sentiment == "negative" and probability > .999 and position is None: 
+            elif sentiment == "negative" and probability > 0.8 and position is None: 
                 if self.last_trade == "buy": 
                     self.sell_all()
 
