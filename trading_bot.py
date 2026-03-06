@@ -47,14 +47,22 @@ class MLTrader(Strategy):
         news = [ev.__dict__["_raw"]["headline"] for ev in news]
         probability, sentiment = estimate_sentiment(news)
         return probability, sentiment
+    
+    def get_momentum(self):
+        bars = self.get_historical_prices(self.symbol, 5, "day")
+        prices = bars.df["close"]
+
+        momentum = prices.iloc[-1] - prices.iloc[0]
+        return momentum
 
     def on_trading_iteration(self):
         cash, last_price, quantity = self.position_sizing()
         probability, sentiment = self.get_sentiment()
         position = self.get_position(self.symbol)
+        momentum = self.get_momentum()
 
         if cash > last_price: 
-            if sentiment == "positive" and probability > .999 and position is None: 
+            if sentiment == "positive" and probability > .999 and position is None and momentum > 0: 
                 if self.last_trade == "sell": 
                     self.sell_all() 
                 order = self.create_order(
@@ -81,7 +89,7 @@ class MLTrader(Strategy):
                 self.submit_order(order) 
                 self.last_trade = "sell" 
 
-start_date = datetime(2023, 1, 1)
+start_date = datetime(2023, 12, 1)
 end_date = datetime(2023, 12, 31)
 broker = Alpaca(ALPACA_CREDS)
 strategy = MLTrader(name='mlstrat', broker = broker, parameters={})
