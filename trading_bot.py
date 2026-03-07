@@ -85,14 +85,17 @@ class MLTrader(Strategy):
             position = self.get_position(self.symbol)
             momentum = self.get_momentum()
             
-            if position:
-                if (position.side == "buy" and momentum < -0.01) or \
-                   (position.side == "sell" and momentum > 0.01):
-                    print(f"🟡 CLOSING position - momentum reversal")
+            if position is not None and position.quantity != 0:
+                if position.quantity > 0 and momentum < -0.01:
+                    print(f"CLOSING long position - momentum reversal")
+                    self.sell_all()
+                    return
+                elif position.quantity < 0 and momentum > 0.01:
+                    print(f"CLOSING short position - momentum reversal")
                     self.sell_all()
                     return
             
-            if cash > last_price * quantity and position is None:
+            if cash > last_price * quantity and (position is None or position.quantity == 0):
                 if sentiment in ["positive", "neutral"] and momentum > -0.005:
                     print(f"BUY: {sentiment} ({probability:.2f}) Mom: {momentum:.3f}")
                     order = self.create_order(
@@ -117,7 +120,7 @@ class MLTrader(Strategy):
             print(f"Error: {e}")
 
 if __name__ == "__main__":
-    start_date = datetime(2023, 1, 1)
+    start_date = datetime(2020, 1, 1)
     end_date = datetime(2024, 1, 1)
     
     params = {
