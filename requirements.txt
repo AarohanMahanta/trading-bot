@@ -1,7 +1,10 @@
+streamlit
+pandas
+yfinance
+plotly
 lumibot
 alpaca-trade-api
-transformers
-torch
-pandas
 python-dotenv
-sentencepiece
+timedelta
+torch
+transformers
